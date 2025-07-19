@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api';
+import { fetchNoteByIdClient } from '@/lib/api/clientApi';
 import type { Note } from '@/types/note';
 import css from './NoteDetailsClient.module.css';
 
@@ -18,7 +18,7 @@ const NoteDetailsClient: React.FC<NoteDetailsClientProps> = ({ id }) => {
     error,
   } = useQuery<Note, Error, Note, ['note', number]>({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id),
+    queryFn: () => fetchNoteByIdClient(id),
     enabled: !isNaN(id),
     refetchOnMount: false,
   });
@@ -64,7 +64,7 @@ const NoteDetailsClient: React.FC<NoteDetailsClientProps> = ({ id }) => {
             className={css.editBtn}
             onClick={() => {
               alert(
-                `Функціональність редагування нотатки з ID: ${note.id} ще не реалізована.`
+                `The functionality of editing a note with ID: ${note.id} is not yet implemented.`
               );
             }}
           >

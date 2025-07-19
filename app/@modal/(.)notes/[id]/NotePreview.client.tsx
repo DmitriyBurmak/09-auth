@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import Modal from '@/components/Modal/Modal';
 import { useQuery } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api';
+import { fetchNoteByIdClient } from '@/lib/api/clientApi';
 import type { Note } from '@/types/note';
 import css from './NotePreview.module.css';
 
@@ -25,7 +25,7 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
     error,
   } = useQuery<Note, Error, Note, ['note', number]>({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id),
+    queryFn: () => fetchNoteByIdClient(id),
     enabled: !isNaN(id),
     refetchOnMount: false,
   });
@@ -33,7 +33,7 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
   if (isNaN(id)) {
     return (
       <Modal onClose={handleClose}>
-        <p className={css.message}>Некоректний ID нотатки.</p>
+        <p className={css.message}>Incorrect note ID.</p>
       </Modal>
     );
   }
@@ -41,7 +41,7 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
   if (isLoading) {
     return (
       <Modal onClose={handleClose}>
-        <p className={css.loadingMessage}>Завантаження нотатки...</p>
+        <p className={css.loadingMessage}>Download a note...</p>
       </Modal>
     );
   }
@@ -50,7 +50,7 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
     return (
       <Modal onClose={handleClose}>
         <p className={css.message}>
-          Помилка при завантаженні: {error?.message || 'Невідома помилка'}
+          Error loading: {error?.message || 'Unknown error'}
         </p>
       </Modal>
     );
@@ -59,13 +59,13 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
   if (!note) {
     return (
       <Modal onClose={handleClose}>
-        <p className={css.message}>Нотатка не знайдена.</p>
+        <p className={css.message}>Note not found.</p>
       </Modal>
     );
   }
 
   const dateToFormat = note.updatedAt || note.createdAt;
-  let formattedDate = 'Дата не вказана';
+  let formattedDate = 'Date not specified';
   let datePrefix = '';
 
   if (dateToFormat) {
@@ -79,7 +79,7 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
         minute: '2-digit',
         second: '2-digit',
       });
-      datePrefix = note.updatedAt ? 'Оновлено' : 'Створено';
+      datePrefix = note.updatedAt ? 'Updated' : 'Created';
     }
   }
 

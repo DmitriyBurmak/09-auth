@@ -130,7 +130,9 @@ const TagsMenu: React.FC = () => {
             <li key={tag} className={css.menuItem} role="none">
               <Link
                 href={getTagHref(tag)}
-                className={`${css.menuLink} ${activeTag === tag ? css.active : ''}`}
+                className={`${css.menuLink} ${
+                  activeTag === tag ? css.active : ''
+                }`}
                 onClick={() => setIsOpen(false)}
                 role="menuitem"
                 tabIndex={0}

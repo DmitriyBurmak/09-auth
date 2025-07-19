@@ -1,7 +1,17 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+      },
+    ];
+  },
+  images: {
+    domains: ['placehold.co'],
+  },
 };
 
 export default nextConfig;

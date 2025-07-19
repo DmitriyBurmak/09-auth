@@ -1,4 +1,4 @@
-import { fetchNotes } from '@/lib/api';
+import { fetchNotesServer } from '@/lib/api/serverApi';
 import {
   QueryClient,
   dehydrate,
@@ -65,7 +65,7 @@ export default async function NotesPage({ params }: NotesPageProps) {
   await queryClient.prefetchQuery({
     queryKey: queryKey,
     queryFn: () =>
-      fetchNotes(initialPage, initialSearch, initialPerPage, apiTag),
+      fetchNotesServer(initialPage, initialSearch, initialPerPage, apiTag),
   });
 
   const prefetchedNotesData = queryClient.getQueryData<NotesResponse>(queryKey);

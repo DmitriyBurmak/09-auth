@@ -1,10 +1,11 @@
-import TanStackProvider from '../components/TanStackProvider/TanStackProvider';
+import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import { Toaster } from 'react-hot-toast';
 import { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import { getBaseUrl, NOTEHUB_OG_IMAGE } from '@/lib/utils/seo';
+import AuthProvider from '@/components/AuthProvider/AuthProvider';
 
 const roboto = Roboto({
   weight: ['400', '700'],
@@ -44,8 +45,10 @@ export default function RootLayout({
       <body className={roboto.className}>
         <TanStackProvider>
           <Header />
-          <main>{children}</main>
-          {modal}
+          <AuthProvider>
+            <main>{children}</main>
+            {modal}
+          </AuthProvider>
           <Footer />
           <Toaster position="top-right" />
         </TanStackProvider>

@@ -18,7 +18,7 @@ const getTagHref = (tag: UITag) => {
 export default async function DefaultSidebar() {
   return (
     <nav className={css.sidebar}>
-      <h3 className={css.sidebarTitle}>Фільтр за тегами</h3>
+      <h3 className={css.sidebarTitle}>Filter by tags</h3>
       <ul className={css.menuList}>
         {allTags.map(tag => (
           <li

@@ -18,7 +18,7 @@ const SidebarLinkClient: React.FC<SidebarLinkClientProps> = ({ href, tag }) => {
       href={href}
       className={`${css.menuLink} ${isActive ? css.active : ''}`}
     >
-      {tag === 'All' ? 'Всі нотатки' : tag}
+      {tag === 'All' ? 'All notes' : tag}
     </Link>
   );
 };

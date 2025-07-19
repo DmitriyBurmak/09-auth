@@ -1,0 +1,7 @@
+.privateLayout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}

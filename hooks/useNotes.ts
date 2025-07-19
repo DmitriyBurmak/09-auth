@@ -3,7 +3,7 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from '@tanstack/react-query';
-import { fetchNotes } from '@/lib/api';
+import { fetchNotesClient } from '@/lib/api/clientApi';
 import type { NotesResponse } from '@/types/note';
 
 interface UseNotesParams {
@@ -18,7 +18,7 @@ type NotesQueryKey = [
   number,
   string,
   number | undefined,
-  string | undefined,
+  string | undefined
 ];
 
 type UseNotesOptionsWithInitialData = Omit<
@@ -45,7 +45,7 @@ export const useNotes = (
   return useQuery<NotesResponse, Error, NotesResponse, NotesQueryKey>({
     queryKey: queryKey,
     queryFn: () =>
-      fetchNotes(params.page, params.search, params.perPage, params.tag),
+      fetchNotesClient(params.page, params.search, params.perPage, params.tag),
     staleTime: 0,
     retry: 1,
     placeholderData: previousData => {

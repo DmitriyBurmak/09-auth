@@ -6,11 +6,11 @@ import { useNotes } from '@/hooks/useNotes';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
-import Link from 'next/link'; 
+import Link from 'next/link';
 import css from './NotesPage.module.css';
-import Loader from '@/app/loading';
-import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
-import type { Note, NotesResponse} from '@/types/note'; 
+import Loader from '@/app/loading'; 
+import ErrorMessage from '@/components/ErrorMessage/ErrorMessage'; 
+import type { Note, NotesResponse } from '@/types/note';
 
 interface NotesClientProps {
   initialNotes: Note[];
@@ -85,7 +85,7 @@ const NotesClient: React.FC<NotesClientProps> = ({
         !isError &&
         currentNotes.length > 0 && <NoteList notes={currentNotes} />
       )}
-       </div>
+    </div>
   );
 };
 

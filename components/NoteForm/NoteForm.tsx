@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '@/lib/api';
+import { createNoteClient } from '@/lib/api/clientApi';
 import type { NoteTag, CreateNotePayload } from '@/types/note';
 import css from './NoteForm.module.css';
 import { useRouter } from 'next/navigation';
@@ -31,7 +31,7 @@ export default function NoteForm({}: NoteFormProps) {
   }, [title, content, tag, setDraft]);
 
   const { mutate: createMutation, isPending } = useMutation({
-    mutationFn: (values: CreateNotePayload) => createNote(values),
+    mutationFn: (values: CreateNotePayload) => createNoteClient(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       clearDraft();

@@ -3,7 +3,7 @@ import {
   dehydrate,
   HydrationBoundary,
 } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api';
+import { fetchNoteByIdServer } from '@/lib/api/serverApi';
 import NoteDetailsClient from './NoteDetails.client';
 import { Metadata } from 'next';
 import type { Note } from '@/types/note';
@@ -22,17 +22,15 @@ export async function generateMetadata({
 
   if (isNaN(noteId)) {
     return {
-      title: 'Нотатка не знайдена',
-      description: 'Запитувана нотатка не існує або ID недійсний.',
+      title: 'Note not found',
+      description: 'The requested note does not exist or the ID is invalid.',
       openGraph: {
-        title: 'Нотатка не знайдена',
-        description: 'Запитувана нотатка не існує або ID недійсний.',
+        title: 'Note not found',
+        description: 'The requested note does not exist or the ID is invalid.',
         url: `${baseUrl}/notes`,
         images: [
           {
-            url: 'https://ac.goit.global/fullstack/react/notehub-og-meta.jpg',
-            width: 1200,
-            height: 630,
+            ...NOTEHUB_OG_IMAGE,
             alt: 'NoteHub - Note not found',
           },
         ],
@@ -44,18 +42,15 @@ export async function generateMetadata({
 
   let note: Note | undefined;
   try {
-    note = await fetchNoteById(noteId);
+    note = await fetchNoteByIdServer(noteId);
   } catch (error) {
-    console.error(
-      `Помилка отримання нотатки для метаданих (ID: ${noteId}):`,
-      error
-    );
+    console.error(`Error getting a note for metadata (ID: ${noteId}):`, error);
     return {
-      title: 'Нотатка не знайдена',
-      description: `Нотатка з ID ${noteId} не знайдена.`,
+      title: 'Note not found',
+      description: `Note with ID ${noteId} not found.`,
       openGraph: {
-        title: 'Нотатка не знайдена',
-        description: `Нотатка з ID ${noteId} не знайдена.`,
+        title: 'Note not found',
+        description: `Note with ID ${noteId} not found.`,
         url: `${baseUrl}/notes/${noteId}`,
         images: [
           {
@@ -100,7 +95,7 @@ export default async function NoteDetailsPage({
   const noteId = Number(id);
 
   if (isNaN(noteId)) {
-    return <div>Неправильний ID нотатки</div>;
+    return <div>Incorrect note ID</div>;
   }
 
   const queryClient = new QueryClient();
@@ -108,7 +103,7 @@ export default async function NoteDetailsPage({
 
   await queryClient.prefetchQuery({
     queryKey: queryKey,
-    queryFn: () => fetchNoteById(noteId),
+    queryFn: () => fetchNoteByIdServer(noteId),
   });
 
   return (

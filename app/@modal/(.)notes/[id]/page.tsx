@@ -5,7 +5,7 @@ import {
   dehydrate,
   HydrationBoundary,
 } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api';
+import { fetchNoteByIdClient } from '@/lib/api/clientApi';
 
 import NotePreview from './NotePreview.client';
 
@@ -29,7 +29,7 @@ export default async function InterceptedNotePage({
   try {
     await queryClient.prefetchQuery({
       queryKey: queryKey,
-      queryFn: () => fetchNoteById(noteId),
+      queryFn: () => fetchNoteByIdClient(noteId),
     });
   } catch (error) {
     console.error('Error prefetching note data:', error);
