@@ -17,15 +17,19 @@ export async function POST(req: NextRequest) {
       const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
       for (const cookieStr of cookieArray) {
         const parsed = parse(cookieStr);
-        const options = {
+        const options: Parameters<typeof cookieStore.set>[2] = {
           expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
           path: parsed.Path,
           maxAge: Number(parsed['Max-Age']),
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
         };
-        if (parsed.accessToken)
+        if (parsed.accessToken) {
           cookieStore.set('accessToken', parsed.accessToken, options);
-        if (parsed.refreshToken)
+        }
+        if (parsed.refreshToken) {
           cookieStore.set('refreshToken', parsed.refreshToken, options);
+        }
       }
 
       return NextResponse.json(apiRes.data, { status: apiRes.status });
@@ -37,7 +41,7 @@ export async function POST(req: NextRequest) {
       logErrorResponse(error.response?.data);
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
-        { status: error.status }
+        { status: error.response?.status || 500 }
       );
     }
     logErrorResponse({ message: (error as Error).message });
