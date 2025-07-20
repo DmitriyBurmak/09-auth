@@ -105,25 +105,28 @@ export const fetchNoteByIdServer = async (id: number): Promise<Note> => {
   }
 };
 
-export const fetchUserProfileServer = async (): Promise<User | null> => {
-  try {
-    const { data } = await api.get<User>('/users/me', {
-      headers: await getServerHeaders(),
-    });
-    return data;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        console.warn('Server session check failed: Unauthorized or Forbidden.');
-        return null;
+export const fetchUserProfileServer =
+  async (): Promise<AxiosResponse<User> | null> => {
+    try {
+      const apiRes = await api.get<User>('/users/me', {
+        headers: await getServerHeaders(),
+      });
+      return apiRes;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          console.warn(
+            'Server session check failed: Unauthorized or Forbidden.'
+          );
+          return null;
+        }
+        console.error(
+          'Server fetchUserProfileServer Axios Error:',
+          error.response?.data || error.message
+        );
+      } else {
+        console.error('Server fetchUserProfileServer Unknown Error:', error);
       }
-      console.error(
-        'Server fetchUserProfileServer Axios Error:',
-        error.response?.data || error.message
-      );
-    } else {
-      console.error('Server fetchUserProfileServer Unknown Error:', error);
+      return null;
     }
-    return null;
-  }
-};
+  };
