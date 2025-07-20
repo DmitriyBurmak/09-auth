@@ -2,7 +2,7 @@ import api from './api';
 import { User } from '@/types/user';
 import { Note, NotesResponse } from '@/types/note';
 import { cookies } from 'next/headers';
-import { isAxiosError } from 'axios';
+import { isAxiosError, AxiosResponse } from 'axios';
 
 const getServerHeaders = async () => {
   const cookieStore = await cookies();
@@ -14,28 +14,31 @@ const getServerHeaders = async () => {
   return headers;
 };
 
-export const checkSessionServer = async (): Promise<User | null> => {
-  try {
-    const { data } = await api.get<User>('/auth/session', {
-      headers: await getServerHeaders(),
-    });
-    return data;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        console.warn('Server session check failed: Unauthorized or Forbidden.');
-        return null;
+export const checkSessionServer =
+  async (): Promise<AxiosResponse<User> | null> => {
+    try {
+      const apiRes = await api.get<User>('/auth/session', {
+        headers: await getServerHeaders(),
+      });
+      return apiRes;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          console.warn(
+            'Server session check failed: Unauthorized or Forbidden.'
+          );
+          return null;
+        }
+        console.error(
+          'Server checkSessionServer Axios Error:',
+          error.response?.data || error.message
+        );
+      } else {
+        console.error('Server checkSessionServer Unknown Error:', error);
       }
-      console.error(
-        'Server checkSessionServer Axios Error:',
-        error.response?.data || error.message
-      );
-    } else {
-      console.error('Server checkSessionServer Unknown Error:', error);
+      return null;
     }
-    return null;
-  }
-};
+  };
 
 export const fetchNotesServer = async (
   page: number,
