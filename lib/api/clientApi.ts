@@ -1,6 +1,7 @@
 import api from './api';
 import { AuthPayload, User, UpdateUserPayload } from '@/types/user';
 import { CreateNotePayload, Note, NotesResponse } from '@/types/note';
+import { isAxiosError } from 'axios';
 
 export const login = async (payload: AuthPayload): Promise<User> => {
   const { data } = await api.post<User>('/auth/login', payload);
@@ -21,7 +22,18 @@ export const checkSessionClient = async (): Promise<User | null> => {
     const { data } = await api.get<User>('/auth/session');
     return data;
   } catch (error) {
-    console.warn('Client session check failed:', error);
+    if (isAxiosError(error)) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        console.warn('Client session check failed: Unauthorized or Forbidden.');
+        return null;
+      }
+      console.error(
+        'Client checkSessionClient Axios Error:',
+        error.response?.data || error.message
+      );
+    } else {
+      console.error('Client checkSessionClient Unknown Error:', error);
+    }
     return null;
   }
 };
@@ -50,12 +62,12 @@ export const createNoteClient = async (
   return data;
 };
 
-export const deleteNoteClient = async (id: number): Promise<Note> => {
+export const deleteNoteClient = async (id: string): Promise<Note> => {
   const { data } = await api.delete<Note>(`/notes/${id}`);
   return data;
 };
 
-export const fetchNoteByIdClient = async (id: number): Promise<Note> => {
+export const fetchNoteByIdClient = async (id: string): Promise<Note> => {
   const { data } = await api.get<Note>(`/notes/${id}`);
   return data;
 };
