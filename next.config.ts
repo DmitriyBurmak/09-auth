@@ -11,6 +11,13 @@ const nextConfig: NextConfig = {
   },
   images: {
     domains: ['placehold.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ac.goit.global',
+        pathname: '**',
+      },
+    ],
   },
 };
 
