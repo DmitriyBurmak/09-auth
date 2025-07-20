@@ -13,10 +13,12 @@ import toast from 'react-hot-toast';
 import css from './EditProfilePage.module.css';
 import Loader from '@/app/loading';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
+import { useAuthStore } from '@/lib/store/authStore';
 
 export default function EditProfilePage() {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { setUser } = useAuthStore();
   const {
     data: user,
     isLoading,
@@ -46,6 +48,7 @@ export default function EditProfilePage() {
     },
     onSuccess: updatedUser => {
       queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+      setUser(updatedUser);
       toast.success('Profile successfully updated!');
       router.push('/profile');
     },
