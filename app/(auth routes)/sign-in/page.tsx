@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { AuthPayload } from '@/types/user';
 import toast from 'react-hot-toast';
 import css from './SignInPage.module.css';
+import { isAxiosError } from 'axios'; // <--- ДОДАНО: Імпорт isAxiosError
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -30,9 +31,15 @@ export default function SignInPage() {
       setUser(user);
       toast.success('Login successful! Welcome!');
       router.push('/profile');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Login error:', err);
-      setError(err.response?.data?.message || 'Login error. Check the data.');
+      let errorMessage = 'Login error. Check the data.';
+      if (isAxiosError(err)) {
+        errorMessage = err.response?.data?.message || err.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
       toast.error('Login error!');
     }
   };

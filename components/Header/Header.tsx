@@ -1,4 +1,3 @@
-import TagsMenu from '@/components/TagsMenu/TagsMenu';
 import Link from 'next/link';
 import AuthNavigation from '@/components/AuthNavigation/AuthNavigation';
 import css from './Header.module.css';

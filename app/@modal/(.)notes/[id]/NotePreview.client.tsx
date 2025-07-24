@@ -25,7 +25,7 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
     error,
   } = useQuery<Note, Error, Note, ['note', number]>({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteByIdClient(id),
+    queryFn: () => fetchNoteByIdClient(String(id)),
     enabled: !isNaN(id),
     refetchOnMount: false,
   });

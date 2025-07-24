@@ -14,6 +14,7 @@ import css from './EditProfilePage.module.css';
 import Loader from '@/app/loading';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import { useAuthStore } from '@/lib/store/authStore';
+import { isAxiosError } from 'axios'; // <--- ДОДАНО: Імпорт isAxiosError
 
 export default function EditProfilePage() {
   const queryClient = useQueryClient();
@@ -52,11 +53,15 @@ export default function EditProfilePage() {
       toast.success('Profile successfully updated!');
       router.push('/profile');
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
       console.error('Profile update error:', err);
-      toast.error(
-        `Profile update error: ${err.response?.data?.message || err.message}`
-      );
+      let errorMessage = 'Profile update error: Unknown error';
+      if (isAxiosError(err)) {
+        errorMessage = err.response?.data?.message || err.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      toast.error(`Profile update error: ${errorMessage}`);
     },
     onSettled: () => {
       setIsSaving(false);

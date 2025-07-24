@@ -29,7 +29,7 @@ export default async function InterceptedNotePage({
   try {
     await queryClient.prefetchQuery({
       queryKey: queryKey,
-      queryFn: () => fetchNoteByIdClient(noteId),
+      queryFn: () => fetchNoteByIdClient(id),
     });
   } catch (error) {
     console.error('Error prefetching note data:', error);

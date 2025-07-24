@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import css from './ProfilePage.module.css';
 import { getBaseUrl, NOTEHUB_OG_IMAGE } from '@/lib/utils/seo';
 import { fetchUserProfileServer } from '@/lib/api/serverApi';
-import { notFound, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 

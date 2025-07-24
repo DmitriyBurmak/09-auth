@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { AuthPayload } from '@/types/user';
 import toast from 'react-hot-toast';
 import css from './SignUpPage.module.css';
+import { isAxiosError } from 'axios';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -30,9 +31,15 @@ export default function SignUpPage() {
       setUser(user);
       toast.success('Registration is successful! Welcome!');
       router.push('/profile');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Registration error:', err);
-      setError(err.response?.data?.message || 'Registration error. Try again.');
+      let errorMessage = 'Registration error. Try again.';
+      if (isAxiosError(err)) {
+        errorMessage = err.response?.data?.message || err.message;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
       toast.error('Registration error!');
     }
   };

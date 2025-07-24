@@ -8,18 +8,33 @@ import css from './NoteForm.module.css';
 import { useRouter } from 'next/navigation';
 import { useNoteStore } from '@/lib/store/noteStore';
 import toast from 'react-hot-toast';
+import { isAxiosError } from 'axios';
 
 const tags: NoteTag[] = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'];
 
-interface NoteFormProps {}
+interface NoteFormProps {
+  initialValues?: {
+    title: string;
+    content: string;
+    tag: NoteTag;
+  };
+  onSubmitSuccess?: () => void;
+  onClose?: () => void;
+}
 
-export default function NoteForm({}: NoteFormProps) {
+export default function NoteForm({
+  initialValues = { title: '', content: '', tag: 'Todo' },
+  onSubmitSuccess,
+  onClose,
+}: NoteFormProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { draft, setDraft, clearDraft } = useNoteStore();
-  const [title, setTitle] = useState(draft.title);
-  const [content, setContent] = useState(draft.content);
-  const [tag, setTag] = useState<NoteTag>(draft.tag);
+  const [title, setTitle] = useState(draft.title || initialValues.title);
+  const [content, setContent] = useState(
+    draft.content || initialValues.content
+  );
+  const [tag, setTag] = useState<NoteTag>(draft.tag || initialValues.tag);
   const [errors, setErrors] = useState<{
     title?: string;
     content?: string;
@@ -36,11 +51,18 @@ export default function NoteForm({}: NoteFormProps) {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       clearDraft();
       toast.success('Note successfully created!');
+      onSubmitSuccess?.();
       router.push('/notes/filter/all');
     },
-    onError: (error: Error) => {
+    onError: (error: unknown) => {
       console.error('Error creating a note:', error);
-      toast.error(`Error: ${error.message}`);
+      let errorMessage = 'Error creating a note: Unknown error';
+      if (isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      toast.error(`Error: ${errorMessage}`);
     },
   });
 
@@ -73,7 +95,9 @@ export default function NoteForm({}: NoteFormProps) {
     };
     createMutation(payload);
   };
+
   const handleCancel = () => {
+    onClose?.();
     router.back();
   };
 

@@ -17,7 +17,7 @@ export default function NoteList({ notes }: NoteListProps) {
     new Set()
   );
   const { mutate: deleteMutation } = useMutation({
-    mutationFn: (id: number) => deleteNoteClient(id),
+    mutationFn: (id: number) => deleteNoteClient(String(id)),
     onMutate: async (id: number) => {
       setDeletingNoteIds(prev => new Set(prev).add(id));
     },
