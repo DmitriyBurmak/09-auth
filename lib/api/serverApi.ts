@@ -40,6 +40,34 @@ export const checkSessionServer =
     }
   };
 
+export const refreshAccessTokenServer = async (
+  refreshToken: string
+): Promise<AxiosResponse | null> => {
+  try {
+    const apiRes = await api.post(
+      'auth/refresh-token',
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: `refreshToken=${refreshToken}`,
+        },
+      }
+    );
+    return apiRes;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      console.error(
+        'Server refreshAccessTokenServer Axios Error:',
+        error.response?.data || error.message
+      );
+    } else {
+      console.error('Server refreshAccessTokenServer Unknown Error:', error);
+    }
+    return null;
+  }
+};
+
 export const fetchNotesServer = async (
   page: number,
   search: string,
