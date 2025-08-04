@@ -8,8 +8,9 @@ import { fetchNoteByIdClient } from '@/lib/api/clientApi';
 import type { Note } from '@/types/note';
 import css from './NotePreview.module.css';
 
+// ЗМІНЕНО: Проп id тепер очікує рядок
 interface NotePreviewProps {
-  id: number;
+  id: string;
 }
 
 const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
@@ -18,19 +19,22 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
     router.back();
   };
 
+  // ЗМІНЕНО: queryKey тепер використовує рядок
   const {
     data: note,
     isLoading,
     isError,
     error,
-  } = useQuery<Note, Error, Note, ['note', number]>({
+  } = useQuery<Note, Error, Note, ['note', string]>({
     queryKey: ['note', id],
-    queryFn: () => fetchNoteByIdClient(String(id)),
-    enabled: !isNaN(id),
+    // ЗМІНЕНО: Забрали зайве перетворення, передаємо id як є
+    queryFn: () => fetchNoteByIdClient(id),
+    // Вимкнено, якщо id порожній
+    enabled: !!id,
     refetchOnMount: false,
   });
 
-  if (isNaN(id)) {
+  if (!id) {
     return (
       <Modal onClose={handleClose}>
         <p className={css.message}>Incorrect note ID.</p>
@@ -79,7 +83,7 @@ const NotePreview: React.FC<NotePreviewProps> = ({ id }) => {
         minute: '2-digit',
         second: '2-digit',
       });
-      datePrefix = note.updatedAt ? 'Updated' : 'Created';
+      datePrefix = note.updatedAt ? 'Оновлено' : 'Створено';
     }
   }
 

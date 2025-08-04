@@ -106,7 +106,7 @@ export const fetchNotesServer = async (
   }
 };
 
-export const fetchNoteByIdServer = async (id: number): Promise<Note> => {
+export const fetchNoteByIdServer = async (id: string): Promise<Note> => {
   try {
     const { data } = await api.get<Note>(`/notes/${id}`, {
       headers: await getServerHeaders(),

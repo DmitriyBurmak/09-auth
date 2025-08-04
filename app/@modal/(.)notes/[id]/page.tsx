@@ -6,7 +6,6 @@ import {
   HydrationBoundary,
 } from '@tanstack/react-query';
 import { fetchNoteByIdServer } from '@/lib/api/serverApi';
-
 import NotePreview from './NotePreview.client';
 
 interface InterceptedNotePageProps {
@@ -24,12 +23,14 @@ export default async function InterceptedNotePage({
   }
 
   const queryClient = new QueryClient();
-  const queryKey = ['note', noteId];
+  // ЗМІНЕНО: queryKey тепер використовує рядок
+  const queryKey = ['note', id];
 
   try {
     await queryClient.prefetchQuery({
       queryKey: queryKey,
-      queryFn: () => fetchNoteByIdServer(noteId),
+      // ЗМІНЕНО: Передаємо ID як рядок
+      queryFn: () => fetchNoteByIdServer(id),
     });
   } catch (error) {
     console.error('Error prefetching note data:', error);
@@ -38,7 +39,8 @@ export default async function InterceptedNotePage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotePreview id={noteId} />
+      {/* ЗМІНЕНО: Передаємо id як рядок */}
+      <NotePreview id={id} />
     </HydrationBoundary>
   );
 }

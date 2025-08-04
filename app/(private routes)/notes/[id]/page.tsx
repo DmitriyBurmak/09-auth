@@ -42,7 +42,7 @@ export async function generateMetadata({
 
   let note: Note | undefined;
   try {
-    note = await fetchNoteByIdServer(noteId);
+    note = await fetchNoteByIdServer(id);
   } catch (error) {
     console.error(`Error getting a note for metadata (ID: ${noteId}):`, error);
     return {
@@ -103,7 +103,7 @@ export default async function NoteDetailsPage({
 
   await queryClient.prefetchQuery({
     queryKey: queryKey,
-    queryFn: () => fetchNoteByIdServer(noteId),
+    queryFn: () => fetchNoteByIdServer(id),
   });
 
   return (
