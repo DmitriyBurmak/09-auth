@@ -1,14 +1,21 @@
 import api from './api';
-import { AuthPayload, User, UpdateUserPayload } from '@/types/user';
+
+import { User } from '@/types/user';
 import { CreateNotePayload, Note, NotesResponse } from '@/types/note';
 import { isAxiosError } from 'axios';
 
-export const login = async (payload: AuthPayload): Promise<User> => {
+export const login = async (payload: {
+  email: string;
+  password: string;
+}): Promise<User> => {
   const { data } = await api.post<User>('/auth/login', payload);
   return data;
 };
 
-export const register = async (payload: AuthPayload): Promise<User> => {
+export const register = async (payload: {
+  email: string;
+  password: string;
+}): Promise<User> => {
   const { data } = await api.post<User>('/auth/register', payload);
   return data;
 };
@@ -77,9 +84,9 @@ export const fetchUserProfileClient = async (): Promise<User> => {
   return data;
 };
 
-export const updateUserProfileClient = async (
-  payload: UpdateUserPayload
-): Promise<User> => {
+export const updateUserProfileClient = async (payload: {
+  username: string;
+}): Promise<User> => {
   const { data } = await api.patch<User>('/users/me', payload);
   return data;
 };

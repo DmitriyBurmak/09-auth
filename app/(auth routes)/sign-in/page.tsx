@@ -4,10 +4,9 @@ import React, { useState } from 'react';
 import { login } from '@/lib/api/clientApi';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useRouter } from 'next/navigation';
-import { AuthPayload } from '@/types/user';
 import toast from 'react-hot-toast';
 import css from './SignInPage.module.css';
-import { isAxiosError } from 'axios'; // <--- ДОДАНО: Імпорт isAxiosError
+import { isAxiosError } from 'axios';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -26,14 +25,14 @@ export default function SignInPage() {
     }
 
     try {
-      const payload: AuthPayload = { email, password };
+      const payload = { email, password };
       const user = await login(payload);
       setUser(user);
-      toast.success('Login successful! Welcome!');
+      toast.success('Login successful! Congratulations!');
       router.push('/profile');
     } catch (err: unknown) {
       console.error('Login error:', err);
-      let errorMessage = 'Login error. Check the data.';
+      let errorMessage = 'Login error. Please check your details.';
       if (isAxiosError(err)) {
         errorMessage = err.response?.data?.message || err.message;
       } else if (err instanceof Error) {
@@ -46,7 +45,7 @@ export default function SignInPage() {
 
   return (
     <main className={css.mainContent}>
-      <h1 className={css.formTitle}>Sign in</h1>
+      <h1 className={css.formTitle}>Вхід</h1>
       <form className={css.form} onSubmit={handleSubmit}>
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
@@ -76,7 +75,7 @@ export default function SignInPage() {
 
         <div className={css.actions}>
           <button type="submit" className={css.submitButton}>
-            Sign in
+            Enter
           </button>
         </div>
 

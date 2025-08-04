@@ -6,7 +6,7 @@ import {
   fetchUserProfileClient,
   updateUserProfileClient,
 } from '@/lib/api/clientApi';
-import { User, UpdateUserPayload } from '@/types/user';
+import { User } from '@/types/user';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
@@ -14,7 +14,7 @@ import css from './EditProfilePage.module.css';
 import Loader from '@/app/loading';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import { useAuthStore } from '@/lib/store/authStore';
-import { isAxiosError } from 'axios'; // <--- ДОДАНО: Імпорт isAxiosError
+import { isAxiosError } from 'axios';
 
 export default function EditProfilePage() {
   const queryClient = useQueryClient();
@@ -42,7 +42,7 @@ export default function EditProfilePage() {
   }, [user]);
 
   const { mutate: updateProfileMutation } = useMutation({
-    mutationFn: (payload: UpdateUserPayload) =>
+    mutationFn: (payload: { username: string }) =>
       updateUserProfileClient(payload),
     onMutate: () => {
       setIsSaving(true);
@@ -124,7 +124,7 @@ export default function EditProfilePage() {
               disabled={isSaving}
             />
           </div>
-          <p className={css.emailText}>Email: {user.email}</p>{' '}
+          <p className={css.emailText}>Email: {user.email}</p>
           <div className={css.actions}>
             <button
               type="button"
