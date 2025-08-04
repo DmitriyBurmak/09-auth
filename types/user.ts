@@ -1,16 +1,9 @@
+// Інтерфейс, що описує сутність користувача
 export interface User {
-  id: string;
+  // Обов'язкова електронна пошта користувача
   email: string;
-  username?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface AuthPayload {
-  email: string;
-  password: string;
-}
-
-export interface UpdateUserPayload {
-  username?: string;
+  // Обов'язкове ім'я користувача
+  username: string;
+  // Обов'язкове посилання на аватар користувача
+  avatar: string;
 }
