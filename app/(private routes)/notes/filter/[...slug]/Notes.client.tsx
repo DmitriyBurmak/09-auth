@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
 import { useQuery } from '@tanstack/react-query';
+import { useAuthStore } from '@/lib/store/authStore';
 import { fetchNotesClient } from '@/lib/api/clientApi';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
@@ -24,6 +25,7 @@ const NotesClient: React.FC<NotesClientProps> = ({
   initialTotalPages,
   currentTag,
 }) => {
+  const { user } = useAuthStore();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
@@ -49,6 +51,7 @@ const NotesClient: React.FC<NotesClientProps> = ({
         perPage: notesPerPage,
         tag: apiTag,
       }),
+    enabled: !!user,
     initialData: {
       notes: initialNotes,
       totalPages: initialTotalPages,
