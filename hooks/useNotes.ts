@@ -13,13 +13,7 @@ interface UseNotesParams {
   tag?: string;
 }
 
-type NotesQueryKey = [
-  'notes',
-  number,
-  string,
-  number | undefined,
-  string | undefined
-];
+type NotesQueryKey = ['notes', UseNotesParams];
 
 type UseNotesOptionsWithInitialData = Omit<
   UseQueryOptions<NotesResponse, Error, NotesResponse, NotesQueryKey>,
@@ -34,18 +28,11 @@ export const useNotes = (
 ) => {
   const queryClient = useQueryClient();
 
-  const queryKey: NotesQueryKey = [
-    'notes',
-    params.page,
-    params.search,
-    params.perPage,
-    params.tag,
-  ];
+  const queryKey: NotesQueryKey = ['notes', params];
 
   return useQuery<NotesResponse, Error, NotesResponse, NotesQueryKey>({
     queryKey: queryKey,
-    queryFn: () =>
-      fetchNotesClient(params.page, params.search, params.perPage, params.tag),
+    queryFn: () => fetchNotesClient(params),
     staleTime: 0,
     retry: 1,
     placeholderData: previousData => {
@@ -59,13 +46,11 @@ export const useNotes = (
       }
 
       if (params.page > 1) {
-        const previousPageKey: NotesQueryKey = [
-          'notes',
-          params.page - 1,
-          params.search,
-          params.perPage,
-          params.tag,
-        ];
+        const previousPageParams: UseNotesParams = {
+          ...params,
+          page: params.page - 1,
+        };
+        const previousPageKey: NotesQueryKey = ['notes', previousPageParams];
         const cachedDataForPreviousPage =
           queryClient.getQueryData(previousPageKey);
         if (cachedDataForPreviousPage) {
