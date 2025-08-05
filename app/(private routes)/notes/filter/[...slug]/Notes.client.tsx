@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
-import { useNotes } from '@/hooks/useNotes';
+import { useQuery } from '@tanstack/react-query';
+import { fetchNotesClient } from '@/lib/api/clientApi';
 import NoteList from '@/components/NoteList/NoteList';
 import Pagination from '@/components/Pagination/Pagination';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import Link from 'next/link';
 import css from './NotesPage.module.css';
-import Loader from '@/app/loading'; 
-import ErrorMessage from '@/components/ErrorMessage/ErrorMessage'; 
+import Loader from '@/app/loading';
+import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import type { Note, NotesResponse } from '@/types/note';
 
 interface NotesClientProps {
@@ -39,17 +40,22 @@ const NotesClient: React.FC<NotesClientProps> = ({
     isLoading,
     isError,
     error,
-  } = useNotes(
-    { page, search: debouncedSearch, perPage: notesPerPage, tag: apiTag },
-    {
-      initialData: {
-        notes: initialNotes,
-        totalPages: initialTotalPages,
-        total: initialTotalPages * notesPerPage,
-        page: 1,
-      } as NotesResponse,
-    }
-  );
+  } = useQuery<NotesResponse>({
+    queryKey: ['notes', page, debouncedSearch, apiTag],
+    queryFn: () =>
+      fetchNotesClient({
+        page,
+        search: debouncedSearch,
+        perPage: notesPerPage,
+        tag: apiTag,
+      }),
+    initialData: {
+      notes: initialNotes,
+      totalPages: initialTotalPages,
+      total: initialTotalPages * notesPerPage,
+      page: 1,
+    },
+  });
   const totalPages = notesData?.totalPages || 1;
   const currentNotes = notesData?.notes || [];
 

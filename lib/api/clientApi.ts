@@ -1,8 +1,14 @@
 import api from './api';
-
 import { User } from '@/types/user';
 import { CreateNotePayload, Note, NotesResponse } from '@/types/note';
 import { isAxiosError } from 'axios';
+
+interface FetchNotesParams {
+  page: number;
+  search: string;
+  perPage?: number;
+  tag?: string;
+}
 
 export const login = async (payload: {
   email: string;
@@ -45,12 +51,12 @@ export const checkSessionClient = async (): Promise<User | null> => {
   }
 };
 
-export const fetchNotesClient = async (
-  page: number,
-  search: string,
-  perPage: number = 12,
-  tag?: string
-): Promise<NotesResponse> => {
+export const fetchNotesClient = async ({
+  page,
+  search,
+  perPage = 12,
+  tag,
+}: FetchNotesParams): Promise<NotesResponse> => {
   const params: Record<string, string | number> = { page, perPage };
   if (search.trim() !== '') {
     params.search = search.trim();
