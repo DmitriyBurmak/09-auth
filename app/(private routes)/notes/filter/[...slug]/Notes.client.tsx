@@ -25,7 +25,8 @@ const NotesClient: React.FC<NotesClientProps> = ({
   initialTotalPages,
   currentTag,
 }) => {
-  const { user } = useAuthStore();
+  // Отримуємо об'єкт користувача та стан готовності автентифікації зі store
+  const { user, isAuthReady } = useAuthStore(); 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
@@ -51,7 +52,9 @@ const NotesClient: React.FC<NotesClientProps> = ({
         perPage: notesPerPage,
         tag: apiTag,
       }),
-    enabled: !!user,
+    // Ключове виправлення: запит виконується, лише якщо користувач
+    // автентифікований І стан автентифікації готовий.
+    enabled: isAuthReady && !!user,
     initialData: {
       notes: initialNotes,
       totalPages: initialTotalPages,
@@ -59,8 +62,14 @@ const NotesClient: React.FC<NotesClientProps> = ({
       page: 1,
     },
   });
+
   const totalPages = notesData?.totalPages || 1;
   const currentNotes = notesData?.notes || [];
+
+  // Відображаємо Loader, поки не завершиться початкова перевірка автентифікації
+  if (!isAuthReady) {
+    return <Loader />;
+  }
 
   return (
     <div className={css.app}>
