@@ -6,10 +6,14 @@ import { isAxiosError, AxiosResponse } from 'axios';
 
 const getServerHeaders = async () => {
   const cookieStore = await cookies();
-  const authToken = cookieStore.get('accessToken');
+  const cookiesList = cookieStore.getAll();
+  const cookieHeader = cookiesList
+    .map(cookie => `${cookie.name}=${cookie.value}`)
+    .join('; ');
+
   const headers: Record<string, string> = {};
-  if (authToken) {
-    headers['Cookie'] = `${authToken.name}=${authToken.value}`;
+  if (cookieHeader) {
+    headers['Cookie'] = cookieHeader;
   }
   return headers;
 };
