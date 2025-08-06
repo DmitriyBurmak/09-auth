@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/lib/store/authStore';
 import { fetchNotesClient } from '@/lib/api/clientApi';
 import NoteList from '@/components/NoteList/NoteList';
@@ -25,8 +25,8 @@ const NotesClient: React.FC<NotesClientProps> = ({
   initialTotalPages,
   currentTag,
 }) => {
-  // Отримуємо об'єкт користувача та стан готовності автентифікації зі store
-  const { user, isAuthReady } = useAuthStore(); 
+  const queryClient = useQueryClient();
+  const { user, isAuthReady } = useAuthStore();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
@@ -38,11 +38,13 @@ const NotesClient: React.FC<NotesClientProps> = ({
   }, [currentTag]);
 
   const apiTag = currentTag.toLowerCase() === 'all' ? undefined : currentTag;
+
   const {
     data: notesData,
     isLoading,
     isError,
     error,
+    isFetching,
   } = useQuery<NotesResponse>({
     queryKey: ['notes', page, debouncedSearch, apiTag],
     queryFn: () =>
@@ -52,21 +54,18 @@ const NotesClient: React.FC<NotesClientProps> = ({
         perPage: notesPerPage,
         tag: apiTag,
       }),
-    // Ключове виправлення: запит виконується, лише якщо користувач
-    // автентифікований І стан автентифікації готовий.
     enabled: isAuthReady && !!user,
-    initialData: {
-      notes: initialNotes,
-      totalPages: initialTotalPages,
-      total: initialTotalPages * notesPerPage,
-      page: 1,
+    placeholderData: previousData => {
+      return (
+        queryClient.getQueryData(['notes', page, debouncedSearch, apiTag]) ||
+        previousData
+      );
     },
   });
 
   const totalPages = notesData?.totalPages || 1;
   const currentNotes = notesData?.notes || [];
 
-  // Відображаємо Loader, поки не завершиться початкова перевірка автентифікації
   if (!isAuthReady) {
     return <Loader />;
   }
@@ -92,14 +91,15 @@ const NotesClient: React.FC<NotesClientProps> = ({
           Create Note +
         </Link>
       </header>
-      {isLoading && <Loader />}
+      {(isLoading || isFetching) && <Loader />}
       {isError && (
         <ErrorMessage message={error?.message || 'Unknown error'} />
       )}{' '}
-      {!isLoading && !isError && currentNotes.length === 0 ? (
+      {!isLoading && !isFetching && !isError && currentNotes.length === 0 ? (
         <div className={css.message}>No notes to display.</div>
       ) : (
         !isLoading &&
+        !isFetching &&
         !isError &&
         currentNotes.length > 0 && <NoteList notes={currentNotes} />
       )}
