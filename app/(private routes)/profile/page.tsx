@@ -6,6 +6,7 @@ import { fetchUserProfileServer } from '@/lib/api/serverApi';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { User } from '@/types/user';
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = getBaseUrl();
@@ -13,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   try {
     const user = await fetchUserProfileServer();
-    if (user?.data?.email) {
-      userEmail = user.data.email;
+    if (user?.email) {
+      userEmail = user.email;
     }
   } catch (error) {
     console.error('Failed to fetch user profile for metadata:', error);
@@ -40,15 +41,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProfilePage() {
-  let userResponse = null;
+  let user: User | null = null;
   try {
-    userResponse = await fetchUserProfileServer();
+    user = await fetchUserProfileServer();
   } catch (error) {
     console.error('Failed to fetch user profile:', error);
     redirect('/sign-in');
   }
-
-  const user = userResponse?.data;
 
   if (!user) {
     redirect('/sign-in');
